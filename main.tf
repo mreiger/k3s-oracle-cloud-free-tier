@@ -18,5 +18,5 @@ module "free-tier-k3s" {
   public_subnet  = "10.0.0.0/23"
 
   freetier_server_ad_list = 3
-  freetier_worker_ad_list = [ 1, 2, 3 ]
+  freetier_worker_ad_list = [ 3 ]
 }

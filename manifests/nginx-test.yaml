@@ -46,8 +46,7 @@ metadata:
   name: test-nginx
 spec:
   rules:
-    - host: ocft.nginx-test.doesntexist
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
