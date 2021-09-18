@@ -20,33 +20,33 @@ data "oci_identity_compartment" "default" {
   id = var.compartment_id
 }
 
-data "template_file" "externaldb_template" {
-  template = file("${path.module}/scripts/externaldb.template.sh")
+# data "template_file" "externaldb_template" {
+#   template = file("${path.module}/scripts/externaldb.template.sh")
 
-  vars = {
-    password = random_password.sqlpassword.result
-  }
-}
+#   vars = {
+#     password = random_password.sqlpassword.result
+#   }
+# }
 
-data "template_file" "externaldb_cloud_init_file" {
-  template = file("${path.module}/cloud-init/cloud-init.template.yaml")
+# data "template_file" "externaldb_cloud_init_file" {
+#   template = file("${path.module}/cloud-init/cloud-init.template.yaml")
 
-  vars = {
-    bootstrap_sh_content = base64gzip(data.template_file.externaldb_template.rendered)
-  }
+#   vars = {
+#     bootstrap_sh_content = base64gzip(data.template_file.externaldb_template.rendered)
+#   }
 
-}
+# }
 
-data "template_cloudinit_config" "externaldb" {
-  gzip          = true
-  base64_encode = true
+# data "template_cloudinit_config" "externaldb" {
+#   gzip          = true
+#   base64_encode = true
 
-  part {
-    filename     = "externaldb.yaml"
-    content_type = "text/cloud-config"
-    content      = data.template_file.externaldb_cloud_init_file.rendered
-  }
-}
+#   part {
+#     filename     = "externaldb.yaml"
+#     content_type = "text/cloud-config"
+#     content      = data.template_file.externaldb_cloud_init_file.rendered
+#   }
+# }
 
 data "template_file" "server_template" {
   template = file("${path.module}/scripts/server.template.sh")

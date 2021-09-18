@@ -1,6 +1,6 @@
-output "sqlpassword" {
-  value = random_password.sqlpassword.result
-}
+# output "sqlpassword" {
+#   value = random_password.sqlpassword.result
+# }
 
 output "k3s-api-ip" {
   value = oci_core_instance.server.public_ip
