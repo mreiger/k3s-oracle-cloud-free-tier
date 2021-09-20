@@ -40,6 +40,15 @@ resource "oci_core_instance_configuration" "worker" {
   }
 }
 
+resource "oci_core_volume" "persistent_block" {
+    #Required
+    compartment_id = var.compartment_id
+
+    availability_domain = element(local.server_ad_names, (var.freetier_server_ad_list - 1))
+    display_name        = "PersistentVol"
+    size_in_gbs         = "100"
+}
+
 resource "oci_core_network_security_group" "nginx" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.main.id
