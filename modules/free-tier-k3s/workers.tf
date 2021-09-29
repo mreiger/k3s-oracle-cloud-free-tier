@@ -17,8 +17,8 @@ resource "oci_core_instance_configuration" "worker" {
       }
 
       shape_config {
-        ocpus         = 2
-        memory_in_gbs = 12
+        ocpus         = 4
+        memory_in_gbs = 24
       }
 
       source_details {
@@ -38,6 +38,15 @@ resource "oci_core_instance_configuration" "worker" {
       instance_details[0].launch_details[0].source_details
     ]
   }
+}
+
+resource "oci_core_volume" "persistent_block" {
+    #Required
+    compartment_id = var.compartment_id
+
+    availability_domain = element(local.server_ad_names, (var.freetier_server_ad_list - 1))
+    display_name        = "PersistentVol"
+    size_in_gbs         = "100"
 }
 
 resource "oci_core_network_security_group" "nginx" {
@@ -122,7 +131,7 @@ resource "oci_load_balancer_listener" "nginx" {
 resource "oci_core_instance_pool" "worker" {
   compartment_id            = var.compartment_id
   instance_configuration_id = oci_core_instance_configuration.worker.id
-  size                      = 2
+  size                      = 1
   display_name              = "${var.project_name}-worker"
 
   state = "RUNNING"

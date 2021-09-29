@@ -19,5 +19,4 @@ module "free-tier-k3s" {
 
   freetier_server_ad_list = 2
   freetier_worker_ad_list = [ 1, 2, 3 ]
-#  freetier_worker_ad_list = [ 1, 2 ]
 }
