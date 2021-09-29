@@ -18,9 +18,9 @@ output "images_amd64" {
 #   value = data.oci_core_images.aarch64.images.0
 # }
 
-output "loadbalacer_ip" {
-  value = oci_load_balancer.nginx.ip_addresses.0
-}
+# output "loadbalacer_ip" {
+#   value = oci_load_balancer.nginx.ip_addresses.0
+# }
 
 output "local" {
   value = local.server_ad_names
