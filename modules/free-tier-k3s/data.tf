@@ -76,6 +76,34 @@ data "template_cloudinit_config" "server" {
   }
 }
 
+data "template_file" "x86worker_template" {
+  template = file("${path.module}/scripts/x86worker.template.sh")
+
+  vars = {
+    cluster_token = random_password.cluster_token.result
+  }
+}
+
+data "template_file" "x86worker_cloud_init_file" {
+  template = file("${path.module}/cloud-init/cloud-init.template.yaml")
+
+  vars = {
+    bootstrap_sh_content = base64gzip(data.template_file.x86worker_template.rendered)
+  }
+
+}
+
+data "template_cloudinit_config" "x86worker" {
+  gzip          = true
+  base64_encode = true
+
+  part {
+    filename     = "x86worker.yaml"
+    content_type = "text/cloud-config"
+    content      = data.template_file.x86worker_cloud_init_file.rendered
+  }
+}
+
 # data "template_file" "worker_template" {
 #   template = file("${path.module}/scripts/worker.template.sh")
 
@@ -118,12 +146,12 @@ data "template_cloudinit_config" "server" {
 
 data "oci_core_images" "amd64" {
   compartment_id           = var.compartment_id
-  operating_system         = "Oracle Linux"
-  operating_system_version = "8"
+  operating_system         = "Canonical Ubuntu"
+  operating_system_version = "20.04 Minimal"
 
-  filter {
-    name   = "display_name"
-    values = ["^([a-zA-z]+)-([a-zA-z]+)-([\\.0-9]+)-([\\.0-9-]+)$"]
-    regex  = true
-  }
+  # filter {
+  #   name   = "display_name"
+  #   values = ["^([a-zA-z]+)-([a-zA-z]+)-([\\.0-9]+)-([\\.0-9-]+)$"]
+  #   regex  = true
+  # }
 }
