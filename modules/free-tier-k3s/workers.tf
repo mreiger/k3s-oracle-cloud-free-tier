@@ -87,84 +87,91 @@ resource "oci_core_instance" "x86worker" {
 #     size_in_gbs         = "100"
 # }
 
-# resource "oci_core_network_security_group" "nginx" {
-#   compartment_id = var.compartment_id
-#   vcn_id         = oci_core_vcn.main.id
-#   display_name   = "nginx-loadbalancer"
-# }
+resource "oci_core_network_security_group" "nginx" {
+  compartment_id = var.compartment_id
+  vcn_id         = oci_core_vcn.main.id
+  display_name   = "nginx-loadbalancer"
+}
 
-# resource "oci_core_network_security_group_security_rule" "nginx_http" {
-#   direction                 = "INGRESS"
-#   network_security_group_id = oci_core_network_security_group.nginx.id
-#   protocol                  = "6"
+resource "oci_core_network_security_group_security_rule" "nginx_http" {
+  direction                 = "INGRESS"
+  network_security_group_id = oci_core_network_security_group.nginx.id
+  protocol                  = "6"
 
-#   description = "Nginx Ingress"
-#   source      = "0.0.0.0/0"
+  description = "Nginx Ingress"
+  source      = "0.0.0.0/0"
 
-#   tcp_options {
-#     destination_port_range {
-#       max = 80
-#       min = 80
-#     }
-#   }
-# }
+  tcp_options {
+    destination_port_range {
+      max = 80
+      min = 80
+    }
+  }
+}
 
-# resource "oci_core_network_security_group_security_rule" "nginx_https" {
-#   direction                 = "INGRESS"
-#   network_security_group_id = oci_core_network_security_group.nginx.id
-#   protocol                  = "6"
+resource "oci_core_network_security_group_security_rule" "nginx_https" {
+  direction                 = "INGRESS"
+  network_security_group_id = oci_core_network_security_group.nginx.id
+  protocol                  = "6"
 
-#   description = "Nginx Ingress"
-#   source      = "0.0.0.0/0"
+  description = "Nginx Ingress"
+  source      = "0.0.0.0/0"
 
-#   tcp_options {
-#     destination_port_range {
-#       max = 443
-#       min = 443
-#     }
-#   }
-# }
+  tcp_options {
+    destination_port_range {
+      max = 443
+      min = 443
+    }
+  }
+}
 
-# resource "oci_load_balancer" "nginx" {
-#   compartment_id             = var.compartment_id
-#   display_name               = "nginx-ingress"
-#   shape                      = "flexible"
-#   subnet_ids                 = [oci_core_subnet.public_subnet.id]
-#   network_security_group_ids = [oci_core_network_security_group.nginx.id]
+resource "oci_load_balancer" "nginx" {
+  compartment_id             = var.compartment_id
+  display_name               = "nginx-ingress"
+  shape                      = "flexible"
+  subnet_ids                 = [oci_core_subnet.public_subnet.id]
+  network_security_group_ids = [oci_core_network_security_group.nginx.id]
 
-#   shape_details {
-#     maximum_bandwidth_in_mbps = "10"
-#     minimum_bandwidth_in_mbps = "10"
-#   }
-# }
+  shape_details {
+    maximum_bandwidth_in_mbps = "10"
+    minimum_bandwidth_in_mbps = "10"
+  }
+}
 
-# resource "oci_load_balancer_backend_set" "nginx" {
-#   load_balancer_id = oci_load_balancer.nginx.id
-#   name             = "nginx-ingress"
-#   policy           = "ROUND_ROBIN"
+resource "oci_load_balancer_backend_set" "nginx" {
+  load_balancer_id = oci_load_balancer.nginx.id
+  name             = "nginx-ingress"
+  policy           = "ROUND_ROBIN"
 
-#   health_checker {
-#     protocol          = "HTTP"
-#     port              = 30080
-#     url_path          = "/healthz"
-#     return_code       = "200"
-#     retries           = 3
-#     interval_ms       = 10000
-#     timeout_in_millis = 3000
-#   }
-# }
+  health_checker {
+    protocol          = "HTTP"
+    port              = 30080
+    url_path          = "/healthz"
+    return_code       = "200"
+    retries           = 3
+    interval_ms       = 10000
+    timeout_in_millis = 3000
+  }
+}
 
-# resource "oci_load_balancer_listener" "nginx" {
-#   default_backend_set_name = oci_load_balancer_backend_set.nginx.name
-#   load_balancer_id         = oci_load_balancer.nginx.id
-#   name                     = "nginx"
-#   port                     = 80
-#   protocol                 = "HTTP"
+resource "oci_load_balancer_backend" "x86worker_backend" {
+    backendset_name = oci_load_balancer_backend_set.nginx.name
+    ip_address = oci_core_instance.x86worker.private_ip
+    load_balancer_id = oci_load_balancer.nginx.id
+    port = 30080
+}
 
-#   connection_configuration {
-#     idle_timeout_in_seconds = "5"
-#   }
-# }
+resource "oci_load_balancer_listener" "nginx" {
+  default_backend_set_name = oci_load_balancer_backend_set.nginx.name
+  load_balancer_id         = oci_load_balancer.nginx.id
+  name                     = "nginx"
+  port                     = 80
+  protocol                 = "HTTP"
+
+  connection_configuration {
+    idle_timeout_in_seconds = "5"
+  }
+}
 
 # resource "oci_core_instance_pool" "worker" {
 #   compartment_id            = var.compartment_id
