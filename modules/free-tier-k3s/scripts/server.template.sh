@@ -9,7 +9,7 @@ iptables -w 60 -I INPUT -i ens3 -p tcp -s 10.0.0.0/8  --dport 6443 -j ACCEPT
 iptables -w 60 -I INPUT -i ens3 -p tcp -s 10.0.0.0/8  --dport 8472 -j ACCEPT
 iptables -w 60 -I INPUT -i ens3 -p tcp -s 10.0.0.0/8  --dport 10250 -j ACCEPT
 
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--no-deploy traefik" K3S_CLUSTER_SECRET='${cluster_token}' sh -s - server --tls-san="k3s.local"
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--no-deploy traefik" K3S_CLUSTER_SECRET='${cluster_token}' sh -s - server --tls-san="k3s.local" --node-taint node-role.kubernetes.io/master=true:NoSchedule
 
 while ! nc -z localhost 6443; do
   sleep 1

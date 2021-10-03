@@ -6,12 +6,13 @@ https://chris-graham.medium.com/create-a-free-k3s-cluster-in-oracle-cloud-using-
 
 ## TODO
 
-* [ ] fix iptables so metrics etc work
-    * [ ] Set in cloud-init does not survive reboot - make it permanent
+* [x] fix iptables so metrics etc work
+    * [x] Set in cloud-init does not survive reboot - make it permanent
 * [ ] Fix nginx-controller
     * [ ] resource requests so HPA can work
-    * [ ] Make sure that the controller pod(s) do(es) not start on server
-* [ ] Try out loadbalancer
+    * [x] Make sure that the controller pod(s) do(es) not start on server
+* [ ] Make the kubernetes / helm part behave - different tf module needed maybe?
+* [x] Try out loadbalancer
 * [ ] Try out trafik instead of nginx as ingress
 * [ ] Figure out arm workers!
 * [ ] Long goal - longhorn?

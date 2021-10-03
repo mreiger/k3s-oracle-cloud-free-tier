@@ -31,7 +31,9 @@ resource "oci_core_instance" "x86worker" {
 
   lifecycle {
     ignore_changes = [
-      source_details
+      source_details,
+      defined_tags,
+      create_vnic_details[0].defined_tags
     ]
   }
 }
