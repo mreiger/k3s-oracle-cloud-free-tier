@@ -11,12 +11,12 @@ resource "oci_core_internet_gateway" "main" {
   display_name   = "main"
 }
 
-resource "oci_core_nat_gateway" "private_subnet" {
-  compartment_id = var.compartment_id
-  vcn_id         = oci_core_vcn.main.id
-  display_name   = "private_subnet"
+# resource "oci_core_nat_gateway" "private_subnet" {
+#   compartment_id = var.compartment_id
+#   vcn_id         = oci_core_vcn.main.id
+#   display_name   = "private_subnet"
 
-}
+# }
 
 resource "oci_core_subnet" "public_subnet" {
   cidr_block     = var.public_subnet
@@ -26,14 +26,14 @@ resource "oci_core_subnet" "public_subnet" {
   dns_label      = "public"
 }
 
-resource "oci_core_subnet" "private_subnet" {
-  cidr_block     = var.private_subnet
-  compartment_id = var.compartment_id
-  vcn_id         = oci_core_vcn.main.id
-  display_name   = "private_subnet"
-  route_table_id = oci_core_route_table.private_subnet.id
-  dns_label      = "private"
-}
+# resource "oci_core_subnet" "private_subnet" {
+#   cidr_block     = var.private_subnet
+#   compartment_id = var.compartment_id
+#   vcn_id         = oci_core_vcn.main.id
+#   display_name   = "private_subnet"
+#   route_table_id = oci_core_route_table.private_subnet.id
+#   dns_label      = "private"
+# }
 
 resource "oci_core_default_route_table" "main" {
   manage_default_resource_id = oci_core_vcn.main.default_route_table_id
@@ -46,22 +46,22 @@ resource "oci_core_default_route_table" "main" {
   }
 }
 
-resource "oci_core_route_table" "private_subnet" {
-  compartment_id = var.compartment_id
-  vcn_id         = oci_core_vcn.main.id
+# resource "oci_core_route_table" "private_subnet" {
+#   compartment_id = var.compartment_id
+#   vcn_id         = oci_core_vcn.main.id
 
-  display_name = "private_subnet_natgw"
+#   display_name = "private_subnet_natgw"
 
-  route_rules {
-    network_entity_id = oci_core_nat_gateway.private_subnet.id
+#   route_rules {
+#     network_entity_id = oci_core_nat_gateway.private_subnet.id
 
-    description = "k8s private to public internal"
-    destination = "0.0.0.0/0"
+#     description = "k8s private to public internal"
+#     destination = "0.0.0.0/0"
 
-  }
+#   }
 
-  # TODO: add service gateway
-}
+#   # TODO: add service gateway
+# }
 
 
 resource "oci_core_default_security_list" "default" {

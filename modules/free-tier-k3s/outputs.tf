@@ -14,9 +14,9 @@ output "images_amd64" {
   value = data.oci_core_images.amd64.images.0
 }
 
-output "images_aarch64" {
-  value = data.oci_core_images.aarch64.images.0
-}
+# output "images_aarch64" {
+#   value = data.oci_core_images.aarch64.images.0
+# }
 
 output "loadbalacer_ip" {
   value = oci_load_balancer.nginx.ip_addresses.0
@@ -26,6 +26,6 @@ output "local" {
   value = local.server_ad_names
 }
 
-output "ad_worker_names" {
-  value = data.template_file.ad_worker_names[*].template
-}
+# output "ad_worker_names" {
+#   value = data.template_file.ad_worker_names[*].template
+# }

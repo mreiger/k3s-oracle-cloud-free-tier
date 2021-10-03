@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 iptables -w 60 -I INPUT -i ens3 -p tcp -s 10.0.0.0/8  --dport 8472 -j ACCEPT
 iptables -w 60 -I INPUT -i ens3 -p tcp -s 10.0.0.0/8  --dport 10250 -j ACCEPT
