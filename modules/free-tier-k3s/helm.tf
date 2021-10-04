@@ -23,6 +23,10 @@ resource "helm_release" "nginx-ingress" {
 
   namespace = "nginx-ingress"
 
+  # set {
+  #   name = "kind"
+  #   value = "Daemonset"
+  # }
   set {
     name  = "containerSecurityContext.runAsUser"
     value = "101"
