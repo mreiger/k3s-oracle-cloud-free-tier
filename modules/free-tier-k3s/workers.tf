@@ -38,56 +38,48 @@ resource "oci_core_instance" "x86worker" {
   }
 }
 
-# resource "oci_core_instance_configuration" "worker" {
-#   compartment_id = var.compartment_id
-#   display_name   = "${var.project_name}-worker"
+resource "oci_core_instance_configuration" "worker" {
+  compartment_id = var.compartment_id
+  display_name   = "${var.project_name}-worker"
 
-#   instance_details {
-#     instance_type = "compute"
+  instance_details {
+    instance_type = "compute"
 
-#     launch_details {
-#       compartment_id = var.compartment_id
-#       display_name   = "worker"
-#       shape          = "VM.Standard.A1.Flex"
+    launch_details {
+      compartment_id = var.compartment_id
+      display_name   = "worker"
+      shape          = "VM.Standard.A1.Flex"
 
-#       create_vnic_details {
-#         subnet_id        = oci_core_subnet.public_subnet.id
-#         assign_public_ip = true
-#         hostname_label   = "worker"
-#       }
+      create_vnic_details {
+        subnet_id        = oci_core_subnet.public_subnet.id
+        assign_public_ip = true
+        hostname_label   = "worker"
+      }
 
-#       shape_config {
-#         ocpus         = 4
-#         memory_in_gbs = 24
-#       }
+      shape_config {
+        ocpus         = 2
+        memory_in_gbs = 12
+      }
 
-#       source_details {
-#         image_id    = data.oci_core_images.aarch64.images.0.id
-#         source_type = "image"
-#       }
+      source_details {
+        image_id    = data.oci_core_images.aarch64.images.0.id
+        source_type = "image"
+      }
 
-#       metadata = {
-#         ssh_authorized_keys = var.ssh_public_key
-#         user_data           = data.template_cloudinit_config.worker.rendered
-#       }
-#     }
-#   }
+      metadata = {
+        ssh_authorized_keys = var.ssh_public_key
+        user_data           = data.template_cloudinit_config.worker.rendered
+      }
+    }
+  }
 
-#   lifecycle {
-#     ignore_changes = [
-#       instance_details[0].launch_details[0].source_details
-#     ]
-#   }
-# }
-
-# resource "oci_core_volume" "persistent_block" {
-#     #Required
-#     compartment_id = var.compartment_id
-
-#     availability_domain = element(local.server_ad_names, (var.freetier_server_ad_list - 1))
-#     display_name        = "PersistentVol"
-#     size_in_gbs         = "100"
-# }
+  lifecycle {
+    ignore_changes = [
+      instance_details[0].launch_details[0].source_details,
+      defined_tags
+    ]
+  }
+}
 
 resource "oci_core_network_security_group" "nginx" {
   compartment_id = var.compartment_id
@@ -175,26 +167,33 @@ resource "oci_load_balancer_listener" "nginx" {
   }
 }
 
-# resource "oci_core_instance_pool" "worker" {
-#   compartment_id            = var.compartment_id
-#   instance_configuration_id = oci_core_instance_configuration.worker.id
-#   size                      = 1
-#   display_name              = "${var.project_name}-worker"
+resource "oci_core_instance_pool" "worker" {
+  compartment_id            = var.compartment_id
+  instance_configuration_id = oci_core_instance_configuration.worker.id
+  size                      = 2
+  display_name              = "${var.project_name}-worker"
 
-#   state = "RUNNING"
+  state = "RUNNING"
 
-#   dynamic "placement_configurations" {
-#     for_each = data.template_file.ad_worker_names[*].template
-#     content {
-#       availability_domain = placement_configurations.value
-#       primary_subnet_id   = oci_core_subnet.public_subnet.id
-#     }
-#   }
+  dynamic "placement_configurations" {
+    for_each = data.template_file.ad_worker_names[*].template
+    content {
+      availability_domain = placement_configurations.value
+      primary_subnet_id   = oci_core_subnet.public_subnet.id
+    }
+  }
 
-#   load_balancers {
-#     backend_set_name = oci_load_balancer_backend_set.nginx.name
-#     load_balancer_id = oci_load_balancer.nginx.id
-#     port             = 30080
-#     vnic_selection   = "PrimaryVnic"
-#   }
-# }
+  load_balancers {
+    backend_set_name = oci_load_balancer_backend_set.nginx.name
+    load_balancer_id = oci_load_balancer.nginx.id
+    port             = 30080
+    vnic_selection   = "PrimaryVnic"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      defined_tags,
+      state
+    ]
+  }
+}
