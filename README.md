@@ -15,12 +15,13 @@ Trying to make the setup more stable and tailored to my needs which are:
 
 * [x] fix iptables so metrics etc work
     * [x] Set in cloud-init does not survive reboot - make it permanent
+* [ ] Put the kubernetes/helm part in a different tf module
 * [ ] Fix nginx-controller
     * [ ] resource requests so HPA can work
     * [x] Make sure that the controller pod(s) do(es) not start on server
     * [ ] Figure out how to serve all the workers - do i need a controller pod per worker?
-* [ ] Make the kubernetes / helm part behave - different tf module needed maybe?
 * [x] Try out loadbalancer
+* [ ] Make a network loadbalancer for non-http traffic
 * [ ] Try out trafik instead of nginx as ingress
 * [ ] Figure out arm workers!
     * [x] Make arm worker group
