@@ -191,6 +191,7 @@ resource "oci_core_instance_pool" "worker" {
   }
 
   lifecycle {
+    prevent_destroy = true
     ignore_changes = [
       defined_tags,
       state
