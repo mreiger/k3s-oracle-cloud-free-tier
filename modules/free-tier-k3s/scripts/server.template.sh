@@ -1,8 +1,6 @@
 #!/bin/bash
 set -x
 
-# yum update -y oracle-cloud-agent
-# systemctl disable firewalld --now
 apt-get update && apt-get -y install netcat-openbsd
 
 iptables -w 60 -I INPUT -i ens3 -p tcp -s 10.0.0.0/8  --dport 6443 -j ACCEPT

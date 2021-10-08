@@ -14,7 +14,6 @@ module "free-tier-k3s" {
   ]
 
   vcn_subnet     = "10.0.0.0/16"
-  # private_subnet = "10.0.2.0/23"
   public_subnet  = "10.0.0.0/23"
 
   freetier_server_ad_list = 2

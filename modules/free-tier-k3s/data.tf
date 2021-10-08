@@ -20,34 +20,6 @@ data "oci_identity_compartment" "default" {
   id = var.compartment_id
 }
 
-# data "template_file" "externaldb_template" {
-#   template = file("${path.module}/scripts/externaldb.template.sh")
-
-#   vars = {
-#     password = random_password.sqlpassword.result
-#   }
-# }
-
-# data "template_file" "externaldb_cloud_init_file" {
-#   template = file("${path.module}/cloud-init/cloud-init.template.yaml")
-
-#   vars = {
-#     bootstrap_sh_content = base64gzip(data.template_file.externaldb_template.rendered)
-#   }
-
-# }
-
-# data "template_cloudinit_config" "externaldb" {
-#   gzip          = true
-#   base64_encode = true
-
-#   part {
-#     filename     = "externaldb.yaml"
-#     content_type = "text/cloud-config"
-#     content      = data.template_file.externaldb_cloud_init_file.rendered
-#   }
-# }
-
 data "template_file" "server_template" {
   template = file("${path.module}/scripts/server.template.sh")
 
@@ -148,10 +120,4 @@ data "oci_core_images" "amd64" {
   compartment_id           = var.compartment_id
   operating_system         = "Canonical Ubuntu"
   operating_system_version = "20.04 Minimal"
-
-  # filter {
-  #   name   = "display_name"
-  #   values = ["^([a-zA-z]+)-([a-zA-z]+)-([\\.0-9]+)-([\\.0-9-]+)$"]
-  #   regex  = true
-  # }
 }
